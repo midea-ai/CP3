@@ -1,0 +1,52 @@
+# FLOPs	GMACs	Params.(M)
+#  1.64	 0.81	 1.367
+# 2040.039810480711
+
+model:
+  NAME: BaseCls
+  encoder_args:
+    NAME: flops_PointNextEncoder
+    blocks: [1, 1, 1, 1, 1, 1]
+    strides: [1, 2, 2, 2, 2, 1]
+    new_channels: [32, 64, 128, 256, 512, 512]
+    mid_channels: [32, 64, 128, 256, 512]
+    width: 32
+    in_channels: 4
+    sa_layers: 2
+    sa_use_res: True
+    radius: 0.15
+    radius_scaling: 1.5
+    nsample: 32
+    expansion: 4
+    aggr_args:
+      feature_type: 'dp_fj'
+      reduction: 'max'
+    group_args:
+      NAME: 'ballquery'
+      normalize_dp: True
+    conv_args:
+      order: conv-norm-act
+    act_args:
+      act: 'relu'
+    norm_args:
+      norm: 'bn'
+  cls_args:
+    NAME: ClsHead
+    num_classes: 15
+    mlps: [512, 256]
+    norm_args:
+      norm: 'bn1d'
+
+pretrained_path: ./log/pre_train/scanobjectnn_pointnext_32.pth
+rank_dir: ./chip/pointnext_32/1_1_1/scanobjectnn
+mode: finetune
+sched: cosine
+epochs: 250
+warmup_epochs: 0
+min_lr: null 
+
+# Training parameters
+lr: 0.002
+optimizer:
+ NAME: 'adamw'
+ weight_decay: 0.05 
